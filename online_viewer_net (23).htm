@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>نشاط المجموعات المتساوية | رياضيات</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --good:#16a34a;
+      --warn:#f59e0b;
+      --bad:#dc2626;
+      --accent:#2563eb;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Tajawal", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .app{
+      max-width:1100px;
+      margin:24px auto;
+      padding:16px;
+    }
+
+    header{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px 18px 14px;
+    }
+
+    .topRow{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    h1{
+      margin:0;
+      font-size:22px;
+      line-height:1.2;
+      letter-spacing:.2px;
+      font-weight:800;
+    }
+
+    #promptText{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.7;
+    }
+
+    .controls{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 160px 180px 240px 1fr;
+      gap:10px;
+      align-items:end;
+    }
+
+    @media (max-width: 900px){
+      .controls{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .field label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    select, input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-family:inherit;
+      font-size:15px;
+      outline:none;
+    }
+    select:focus, input:focus{
+      border-color:#93c5fd;
+      box-shadow:0 0 0 4px rgba(59,130,246,.12);
+    }
+
+    .buttons{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    button{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:12px;
+      font-family:inherit;
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s transform, .15s box-shadow, .15s border-color;
+      user-select:none;
+    }
+    button:hover{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.08); }
+    button:active{ transform: translateY(0px); }
+
+    .primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:#fff;
+    }
+
+    .status{
+      margin-top:12px;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      padding:10px 12px;
+      font-size:15px;
+      line-height:1.6;
+      background:#fbfbfd;
+      min-height:44px;
+    }
+    .status[data-type="good"]{ border-color:rgba(22,163,74,.35); background:rgba(22,163,74,.06); }
+    .status[data-type="warn"]{ border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.08); }
+    .status[data-type="bad"] { border-color:rgba(220,38,38,.35); background:rgba(220,38,38,.06); }
+
+    .board{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1.25fr .85fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .board{ grid-template-columns: 1fr; }
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .panel h2{
+      margin:0 0 10px;
+      font-size:16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:30px;
+      height:26px;
+      padding:0 10px;
+      border-radius:999px;
+      background:#f3f4f6;
+      border:1px solid var(--border);
+      font-weight:800;
+      font-size:14px;
+    }
+
+    .groupsGrid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .groupsGrid{ grid-template-columns: 1fr; }
+    }
+
+    .group{
+      border-radius:16px;
+      border:1px solid var(--border);
+      padding:12px;
+    }
+
+    .groupHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .groupHeader h3{
+      margin:0;
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .tray{
+      border:3px solid #111;
+      border-radius:999px;
+      min-height:150px;
+      padding:14px;
+      background:#fff;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-content:flex-start;
+      justify-content:flex-start;
+    }
+
+    .poolTray{
+      border:2px dashed var(--border);
+      border-radius:16px;
+      min-height:210px;
+      padding:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-content:flex-start;
+      background:#fff;
+    }
+
+    .hint{
+      margin:10px 0 0;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .dropzone.hover .tray,
+    .dropzone.hover .poolTray{
+      outline: 4px solid rgba(37,99,235,.18);
+      outline-offset: 2px;
+    }
+
+    .token{
+      width:44px;
+      height:44px;
+      border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, #ffe08a, #f4b400 60%, #cc8a00);
+      box-shadow: 0 10px 18px rgba(0,0,0,.14);
+      border:1px solid rgba(0,0,0,.12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:grab;
+      user-select:none;
+      touch-action:none;
+    }
+    .token:active{ cursor:grabbing; }
+    .token.selected{
+      outline:4px solid rgba(59,130,246,.22);
+      outline-offset:2px;
+    }
+    .token.dragging{
+      opacity:.95;
+      box-shadow: 0 18px 30px rgba(0,0,0,.22);
+    }
+
+    footer{
+      margin-top:14px;
+      color:var(--muted);
+      text-align:center;
+      font-size:13px;
+      padding:10px 0 4px;
+    }
+
+    /* Confetti */
+    #confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .15s ease;
+    }
+    #confetti.show{ opacity:1; }
+    .confetto{
+      position:absolute;
+      top:-20px;
+      width:10px;
+      height:16px;
+      border-radius:4px;
+      background: linear-gradient(180deg, #60a5fa, #f59e0b);
+      animation: fall 1.4s linear forwards;
+    }
+    @keyframes fall{
+      to{
+        transform: translateY(110vh) rotate(360deg);
+        opacity:0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="topRow">
+        <div>
+          <h1>نشاط: أكون مجموعات متساوية</h1>
+          <p id="promptText"></p>
+        </div>
+
+        <div class="buttons">
+          <button id="newBtn">نشاط جديد</button>
+          <button id="resetBtn">إعادة ضبط</button>
+          <button id="solveBtn">حل تلقائي</button>
+          <button id="checkBtn" class="primary">تحقّق</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label>عدد المجموعات</label>
+          <select id="groupsSelect"></select>
+        </div>
+
+        <div class="field">
+          <label>عدد القطع</label>
+          <select id="piecesSelect"></select>
+        </div>
+
+        <div class="field">
+          <label>إجابتي: عدد القطع في كل مجموعة =</label>
+          <input id="answerInput" type="text" inputmode="numeric" placeholder="اكتب/ي العدد هنا" />
+        </div>
+
+        <div class="field">
+          <label>ملاحظة</label>
+          <div style="padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:14px;line-height:1.6">
+            اسحب/ي القطع إلى المجموعات أو اضغط/ي على القطعة ثم اضغط/ي على المجموعة.
+          </div>
+        </div>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </header>
+
+    <main class="board">
+      <section class="panel">
+        <h2>المجموعات <span class="badge" id="groupsInfo">٣</span></h2>
+        <div class="groupsGrid" id="groupsArea"></div>
+      </section>
+
+      <section class="panel dropzone" id="poolZone" data-zone="pool">
+        <h2>القطع <span class="badge" id="poolCount">٠</span></h2>
+        <div class="poolTray" id="poolTokens"></div>
+        <p class="hint">نصيحة: وزّعي جميع القطع أولاً، ثم اكتبي الإجابة في خانة “إجابتي”، ثم اضغطي “تحقّق”.</p>
+      </section>
+    </main>
+
+    <footer>
+      أ/ فاطمة هزازي — ملتقى معلمي ومعلمات الرياضيات — ملتقى التعليم التفاعلي
+    </footer>
+  </div>
+
+  <div id="confetti"></div>
+
+  <script>
+    (() => {
+      const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
+      const toArabic = (num) => String(num).replace(/\d/g, d => arabicDigits[d]);
+      const parseArabicInt = (val) => {
+        if(val == null) return null;
+        const s = String(val).trim();
+        if(!s) return null;
+        const normalized = s.replace(/[٠-٩]/g, ch => String(arabicDigits.indexOf(ch)));
+        const n = parseInt(normalized, 10);
+        return Number.isFinite(n) ? n : null;
+      };
+      const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+      const state = { groups: 3, pieces: 9 };
+
+      const groupsSelect = document.getElementById('groupsSelect');
+      const piecesSelect = document.getElementById('piecesSelect');
+      const answerInput  = document.getElementById('answerInput');
+
+      const promptText = document.getElementById('promptText');
+      const groupsArea = document.getElementById('groupsArea');
+      const poolTokens = document.getElementById('poolTokens');
+      const poolZone   = document.getElementById('poolZone');
+
+      const statusEl   = document.getElementById('status');
+      const poolCount  = document.getElementById('poolCount');
+      const groupsInfo = document.getElementById('groupsInfo');
+
+      const newBtn   = document.getElementById('newBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const solveBtn = document.getElementById('solveBtn');
+      const checkBtn = document.getElementById('checkBtn');
+
+      let selectedToken = null;
+      let drag = null;
+      let hoverZone = null;
+
+      function setStatus(msg, type='') {
+        statusEl.textContent = msg;
+        statusEl.dataset.type = type;
+      }
+
+      function clearSelection(){
+        if(selectedToken){
+          selectedToken.classList.remove('selected');
+          selectedToken = null;
+        }
+      }
+
+      function toggleSelection(token){
+        if(selectedToken === token){
+          clearSelection();
+          setStatus('تم إلغاء الاختيار.');
+          return;
+        }
+        clearSelection();
+        selectedToken = token;
+        token.classList.add('selected');
+        setStatus('تم اختيار قطعة. الآن اضغط/ي على المجموعة لوضعها (أو اسحب/ي القطعة).');
+      }
+
+      function resetTokenStyle(token){
+        token.classList.remove('dragging');
+        token.style.position='';
+        token.style.left='';
+        token.style.top='';
+        token.style.width='';
+        token.style.height='';
+        token.style.zIndex='';
+        token.style.pointerEvents='';
+      }
+
+      function moveToken(token, targetTray){
+        if(!token || !targetTray) return;
+        resetTokenStyle(token);
+        targetTray.appendChild(token);
+        token.classList.remove('selected');
+        selectedToken = null;
+        updateCounts();
+      }
+
+      function fillGroupSelect(){
+        groupsSelect.innerHTML='';
+        for(let g=2; g<=6; g++){
+          const opt = document.createElement('option');
+          opt.value = String(g);
+          opt.textContent = toArabic(g);
+          groupsSelect.appendChild(opt);
+        }
+        groupsSelect.value = String(state.groups);
+      }
+
+      function fillPiecesSelectOptions(groups){
+        piecesSelect.innerHTML='';
+        for(let m=2; m<=8; m++){
+          const val = groups * m;
+          const opt = document.createElement('option');
+          opt.value = String(val);
+          opt.textContent = `${toArabic(val)} قطعة`;
+          piecesSelect.appendChild(opt);
+        }
+        const preferred = groups * 3; // مثل صورة النشاط: ٣ قطع لكل مجموعة عادة
+        piecesSelect.value = [...piecesSelect.options].some(o => Number(o.value) === preferred)
+          ? String(preferred)
+          : piecesSelect.options[0].value;
+      }
+
+      function buildPrompt(){
+        promptText.innerHTML = `وزّعي <b>${toArabic(state.pieces)}</b> قطعة على <b>${toArabic(state.groups)}</b> مجموعات متساوية، ثم أوجدي عدد القطع في كل مجموعة.`;
+        groupsInfo.textContent = toArabic(state.groups);
+      }
+
+      function renderGroups(){
+        groupsArea.innerHTML='';
+        for(let i=1; i<=state.groups; i++){
+          const g = document.createElement('div');
+          g.className = 'group dropzone';
+          g.dataset.zone = 'group';
+          g.dataset.group = String(i);
+
+          g.innerHTML = `
+            <div class="groupHeader">
+              <h3>مجموعة ${toArabic(i)}</h3>
+              <span class="badge">٠</span>
+            </div>
+            <div class="tray"></div>
+          `;
+
+          g.addEventListener('click', (e)=>{
+            if(e.target.closest('.token')) return;
+            if(selectedToken){
+              moveToken(selectedToken, g.querySelector('.tray'));
+              setStatus('تم نقل القطعة.');
+            }
+          });
+
+          groupsArea.appendChild(g);
+        }
+      }
+
+      function createToken(i){
+        const t = document.createElement('div');
+        t.className = 'token';
+        t.tabIndex = 0;
+        t.dataset.id = String(i);
+        t.setAttribute('role','button');
+        t.setAttribute('aria-label',`قطعة ${toArabic(i)}`);
+        t.addEventListener('pointerdown', onTokenPointerDown);
+        t.addEventListener('pointermove', onTokenPointerMove);
+        t.addEventListener('pointerup', onTokenPointerUp);
+        t.addEventListener('pointercancel', onTokenPointerUp);
+        t.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            toggleSelection(t);
+          }
+        });
+        return t;
+      }
+
+      function renderPieces(){
+        poolTokens.innerHTML='';
+        for(let i=1; i<=state.pieces; i++){
+          poolTokens.appendChild(createToken(i));
+        }
+      }
+
+      function updateCounts(){
+        document.querySelectorAll('.group').forEach((g)=>{
+          const tray = g.querySelector('.tray');
+          const count = tray ? tray.children.length : 0;
+          g.querySelector('.badge').textContent = toArabic(count);
+        });
+        poolCount.textContent = toArabic(poolTokens.children.length);
+      }
+
+      function resetActivity(){
+        [...document.querySelectorAll('.token')].forEach(t => poolTokens.appendChild(t));
+        clearSelection();
+        answerInput.value = '';
+        setStatus('تمت إعادة الضبط. وزّعي القطع بالتساوي.');
+        updateCounts();
+      }
+
+      function autoSolve(){
+        resetActivity();
+        const per = state.pieces / state.groups;
+        const tokens = [...poolTokens.children];
+        const trays  = [...document.querySelectorAll('.group .tray')];
+        let idx = 0;
+        for(let g=0; g<state.groups; g++){
+          for(let j=0; j<per; j++){
+            trays[g].appendChild(tokens[idx++]);
+          }
+        }
+        answerInput.value = toArabic(per);
+        setStatus(`الحل: في كل مجموعة ${toArabic(per)} قطع.`, 'warn');
+        updateCounts();
+      }
+
+      function celebrate(){
+        const box = document.getElementById('confetti');
+        box.innerHTML = '';
+        const n = 60;
+        for(let i=0; i<n; i++){
+          const p = document.createElement('div');
+          p.className = 'confetto';
+          p.style.left = (Math.random()*100) + 'vw';
+          p.style.animationDelay = (Math.random()*0.35) + 's';
+          p.style.transform = `rotate(${Math.random()*360}deg)`;
+          box.appendChild(p);
+        }
+        box.classList.add('show');
+        setTimeout(()=>{ box.classList.remove('show'); box.innerHTML=''; }, 1500);
+      }
+
+      function checkAnswer(){
+        const poolLeft = poolTokens.children.length;
+        const trays  = [...document.querySelectorAll('.group .tray')];
+        const counts = trays.map(t => t.children.length);
+
+        if(poolLeft > 0){
+          setStatus(`تبقّى ${toArabic(poolLeft)} قطعة في منطقة القطع. وزّعي جميع القطع أولاً.`, 'warn');
+          return;
+        }
+
+        const allEqual = counts.every(c => c === counts[0]);
+        if(!allEqual){
+          const shown = counts.map((c,i)=>`مج${toArabic(i+1)}:${toArabic(c)}`).join(' ، ');
+          setStatus(`ليست متساوية بعد ❗️ (${shown})`, 'bad');
+          return;
+        }
+
+        const per = counts[0];
+        const typed = parseArabicInt(answerInput.value);
+
+        if(typed == null){
+          answerInput.value = toArabic(per);
+          setStatus(`أحسنتِ ✅ في كل مجموعة ${toArabic(per)} قطع.`, 'good');
+        } else if(typed === per){
+          setStatus(`أحسنتِ ✅ إجابتك صحيحة: ${toArabic(per)} قطع في كل مجموعة.`, 'good');
+        } else {
+          answerInput.value = toArabic(per);
+          setStatus(`التوزيع صحيح ✅ لكن إجابتك (${toArabic(typed)}) غير صحيحة. الصحيح: ${toArabic(per)}.`, 'warn');
+        }
+        celebrate();
+      }
+
+      // ===== Drag (Pointer Events) =====
+      function onTokenPointerDown(e){
+        if(e.button !== undefined && e.button !== 0) return;
+        const token = e.currentTarget;
+
+        token.setPointerCapture(e.pointerId);
+        const rect = token.getBoundingClientRect();
+
+        drag = {
+          token,
+          pointerId: e.pointerId,
+          startX: e.clientX,
+          startY: e.clientY,
+          started: false,
+          originParent: token.parentElement,
+          originNext: token.nextSibling,
+          rect,
+          offsetX: 0,
+          offsetY: 0
+        };
+      }
+
+      function onTokenPointerMove(e){
+        if(!drag || drag.pointerId !== e.pointerId) return;
+
+        const dx = e.clientX - drag.startX;
+        const dy = e.clientY - drag.startY;
+        const dist = Math.hypot(dx, dy);
+
+        if(!drag.started){
+          if(dist < 8) return; // عتبة بسيطة قبل بدء السحب
+          beginDrag(e);
+        }
+        moveDrag(e);
+      }
+
+      function beginDrag(e){
+        drag.started = true;
+        clearSelection();
+
+        const token = drag.token;
+        const rect  = drag.rect;
+
+        drag.offsetX = e.clientX - rect.left;
+        drag.offsetY = e.clientY - rect.top;
+
+        token.classList.add('dragging');
+        token.style.width = rect.width + 'px';
+        token.style.height = rect.height + 'px';
+        token.style.position = 'fixed';
+        token.style.left = (e.clientX - drag.offsetX) + 'px';
+        token.style.top  = (e.clientY - drag.offsetY) + 'px';
+        token.style.zIndex = 9999;
+        token.style.pointerEvents = 'none';
+
+        document.body.appendChild(token);
+      }
+
+      function moveDrag(e){
+        const token = drag.token;
+        token.style.left = (e.clientX - drag.offsetX) + 'px';
+        token.style.top  = (e.clientY - drag.offsetY) + 'px';
+
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const zone = el ? el.closest('.dropzone') : null;
+
+        if(zone !== hoverZone){
+          if(hoverZone) hoverZone.classList.remove('hover');
+          hoverZone = zone;
+          if(hoverZone) hoverZone.classList.add('hover');
+        }
+      }
+
+      function onTokenPointerUp(e){
+        if(!drag || drag.pointerId !== e.pointerId) return;
+        try { drag.token.releasePointerCapture(e.pointerId); } catch(_){}
+
+        if(!drag.started){
+          toggleSelection(drag.token);
+          drag = null;
+          return;
+        }
+
+        finalizeDrop(e);
+        drag = null;
+      }
+
+      function finalizeDrop(e){
+        const token = drag.token;
+
+        if(hoverZone) hoverZone.classList.remove('hover');
+        hoverZone = null;
+
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const zone = el ? el.closest('.dropzone') : null;
+
+        if(zone){
+          if(zone.id === 'poolZone'){
+            poolTokens.appendChild(token);
+          } else {
+            const tray = zone.querySelector('.tray');
+            if(tray) tray.appendChild(token);
+            else drag.originParent.insertBefore(token, drag.originNext);
+          }
+        } else {
+          drag.originParent.insertBefore(token, drag.originNext);
+        }
+
+        resetTokenStyle(token);
+        updateCounts();
+      }
+
+      function startActivityFromControls(){
+        state.groups = Number(groupsSelect.value);
+        state.pieces = Number(piecesSelect.value);
+
+        answerInput.value = '';
+        buildPrompt();
+        renderGroups();
+        renderPieces();
+        updateCounts();
+        setStatus('ابدئي بتوزيع القطع بالتساوي على المجموعات.');
+      }
+
+      // ===== Events =====
+      groupsSelect.addEventListener('change', ()=>{
+        const g = Number(groupsSelect.value);
+        fillPiecesSelectOptions(g);
+        startActivityFromControls();
+      });
+
+      piecesSelect.addEventListener('change', startActivityFromControls);
+
+      poolZone.addEventListener('click', (e)=>{
+        if(e.target.closest('.token')) return;
+        if(selectedToken){
+          moveToken(selectedToken, poolTokens);
+          setStatus('تمت إعادة القطعة إلى منطقة القطع.');
+        }
+      });
+
+      newBtn.addEventListener('click', ()=>{
+        const g = randInt(2, 5);
+        groupsSelect.value = String(g);
+        fillPiecesSelectOptions(g);
+        const opts = [...piecesSelect.options];
+        piecesSelect.value = opts[randInt(0, opts.length - 1)].value;
+        startActivityFromControls();
+      });
+
+      resetBtn.addEventListener('click', resetActivity);
+      solveBtn.addEventListener('click', autoSolve);
+      checkBtn.addEventListener('click', checkAnswer);
+
+      // ===== Init =====
+      fillGroupSelect();
+      fillPiecesSelectOptions(state.groups);
+      piecesSelect.value = String(state.pieces);
+      startActivityFromControls();
+    })();
+  </script>
+</body>
+</html>
